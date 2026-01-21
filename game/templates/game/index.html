@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ポケゲッサー - ポケモン当てゲーム</title>
+    <meta name="description" content="ポケモンの特徴から正解のポケモンを推測するゲームです。図鑑番号、タイプ、身長、体重などのヒントを元に8回以内に当てましょう！">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'game/style.css' %}">
+</head>
+<body>
+    <div class="background-gradient"></div>
+    
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 class="title">
+                <span class="title-icon">⚡</span>
+                ポケゲッサー
+                <span class="title-icon">⚡</span>
+            </h1>
+            <p class="subtitle">ポケモンの特徴から正解を当てよう！</p>
+        </header>
+
+        <!-- 統計情報 -->
+        <div class="stats-container" id="statsContainer">
+            <div class="stat-card">
+                <div class="stat-value" id="totalGames">0</div>
+                <div class="stat-label">プレイ回数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="clearRate">0%</div>
+                <div class="stat-label">クリア率</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgAttempts">0</div>
+                <div class="stat-label">平均試行回数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="bestAttempts">-</div>
+                <div class="stat-label">最少試行回数</div>
+            </div>
+        </div>
+
+        <!-- ゲームエリア -->
+        <div class="game-area">
+            <!-- スタート画面 -->
+            <div class="start-screen" id="startScreen">
+                <div class="start-content">
+                    <div class="pokeball-icon">
+                        <div class="pokeball">
+                            <div class="pokeball-top"></div>
+                            <div class="pokeball-middle"></div>
+                            <div class="pokeball-bottom"></div>
+                        </div>
+                    </div>
+                    <h2>ゲームを始めよう！</h2>
+                    <p>ランダムに選ばれたポケモンを<br>8回以内に当ててください</p>
+                    <button class="btn-primary" id="startBtn">
+                        <span>ゲームスタート</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ゲーム画面 -->
+            <div class="game-screen hidden" id="gameScreen">
+                <!-- 試行回数表示 -->
+                <div class="attempts-display">
+                    <span class="attempts-label">試行回数:</span>
+                    <span class="attempts-value" id="attemptsValue">0 / 8</span>
+                </div>
+
+                <!-- 入力エリア -->
+                <div class="input-area">
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="pokemonInput" 
+                            class="pokemon-input"
+                            placeholder="ポケモンの名前を入力..."
+                            autocomplete="off"
+                        >
+                        <div class="autocomplete-list" id="autocompleteList"></div>
+                    </div>
+                    <button class="btn-guess" id="guessBtn">
+                        <span>推測する</span>
+                    </button>
+                </div>
+
+                <!-- 結果表示エリア -->
+                <div class="results-area" id="resultsArea">
+                    <!-- ヘッダー -->
+                    <div class="results-header">
+                        <div class="result-col">名前</div>
+                        <div class="result-col">図鑑No.</div>
+                        <div class="result-col">タイプ</div>
+                        <div class="result-col">身長</div>
+                        <div class="result-col">体重</div>
+                        <div class="result-col">世代</div>
+                        <div class="result-col">進化</div>
+                    </div>
+                    <!-- 結果行はJavaScriptで追加 -->
+                </div>
+            </div>
+
+            <!-- 結果画面 -->
+            <div class="result-screen hidden" id="resultScreen">
+                <div class="result-content">
+                    <div class="result-icon" id="resultIcon"></div>
+                    <h2 class="result-title" id="resultTitle"></h2>
+                    <p class="result-message" id="resultMessage"></p>
+                    <div class="answer-display">
+                        <span class="answer-label">正解:</span>
+                        <span class="answer-value" id="answerValue"></span>
+                    </div>
+                    <button class="btn-primary" id="playAgainBtn">
+                        <span>もう一度プレイ</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ローディング -->
+        <div class="loading hidden" id="loading">
+            <div class="spinner"></div>
+            <p>読み込み中...</p>
+        </div>
+    </div>
+    <footer>
+       「 ポケゲッサー」は、ポケットモンスターの非公式2次創作です。
+株式会社ポケモン他、企業様とは一切関係ありません。
+ポケットモンスター・ポケモン・Pokémonは任天堂・クリーチャーズ・ゲームフリークの登録商標です
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{% static 'game/script.js' %}"></script>
+</body>
+</html>

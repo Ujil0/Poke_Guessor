@@ -1,10 +1,11 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import Pokemon, GameSession, PlayerStats
-import json
-import random
-import uuid
+#ビューを定義する
+from django.shortcuts import render #htmlを表示する
+from django.http import JsonResponse #ブラウザに対してJSON形式のデータを返す。画面の変化にリロードさせる必要がない。
+from django.views.decorators.csrf import csrf_exempt#CSRF対策。できれば辞めたい
+from .models import Pokemon, GameSession, PlayerStats #models.pyで定義したモデルをインポート
+import json #JSON形式のデータを扱う
+import random #ランダムな数値を生成する
+import uuid #UUID(不変で重複しない識別子)を生成する
 
 
 def index(request):
@@ -23,13 +24,14 @@ def get_or_create_player_id(request):
 @csrf_exempt
 def start_game(request):
     """新しいゲームを開始"""
-    if request.method != 'POST':
+    if request.method != 'POST':#メソッドがPOSTじゃなければエラーを返す
         return JsonResponse({'error': 'POST method required'}, status=405)
     
     # プレイヤーID取得
     player_id = get_or_create_player_id(request)
     
     # ランダムにポケモンを選択
+    """データベースの中にポケモンが登録されているか確認"""
     pokemon_count = Pokemon.objects.count()
     if pokemon_count == 0:
         return JsonResponse({'error': 'ポケモンデータが登録されていません'}, status=500)

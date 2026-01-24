@@ -1,6 +1,7 @@
 from django.db import models
 import uuid
 
+#データベースを定義する
 
 class Pokemon(models.Model):
     """ポケモンの基本情報を格納するモデル"""
@@ -13,15 +14,15 @@ class Pokemon(models.Model):
     weight = models.FloatField(verbose_name='重さ(kg)')
     generation = models.IntegerField(verbose_name='世代')
     evolution_count = models.IntegerField(default=0, verbose_name='進化回数')
-    
-    class Meta:
+    #ポケモンのクラスを定義
+
+    class Meta:#Djangoの管理画面での見え方を整える
         verbose_name = 'ポケモン'
         verbose_name_plural = 'ポケモン'
         ordering = ['pokedex_number']
     
-    def __str__(self):
+    def __str__(self):#データベースの表示を整える
         return f"No.{self.pokedex_number:04d} {self.name_ja}"
-
 
 class GameSession(models.Model):
     """ゲームセッションを管理するモデル"""
@@ -31,20 +32,20 @@ class GameSession(models.Model):
         ('failed', '失敗'),
     ]
     
-    session_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    session_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)#現在のセッションのID。重複無し
     player_id = models.CharField(max_length=100, verbose_name='プレイヤーID')  # クッキーから取得
-    target_pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, verbose_name='お題ポケモン')
-    attempts = models.IntegerField(default=0, verbose_name='試行回数')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='playing', verbose_name='状態')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
+    target_pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, verbose_name='お題ポケモン')#お題ポケモン
+    attempts = models.IntegerField(default=0, verbose_name='試行回数')#試行回数
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='playing', verbose_name='状態')#状態
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')#セッションの作成日時
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')#セッションの更新日時
     
-    class Meta:
+    class Meta:#Djangoの管理画面での見え方を整える
         verbose_name = 'ゲームセッション'
         verbose_name_plural = 'ゲームセッション'
         ordering = ['-created_at']
     
-    def __str__(self):
+    def __str__(self):#データベースの表示を整える
         return f"{self.player_id} - {self.target_pokemon.name_ja} ({self.status})"
 
 
@@ -58,11 +59,11 @@ class PlayerStats(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
     
-    class Meta:
+    class Meta:#Djangoの管理画面での見え方を整える
         verbose_name = 'プレイヤー戦績'
         verbose_name_plural = 'プレイヤー戦績'
     
-    def __str__(self):
+    def __str__(self):#データベースの表示を整える
         return f"{self.player_id} - {self.cleared_games}/{self.total_games}"
     
     @property

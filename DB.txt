@@ -1,0 +1,8 @@
+Hostname:dpg-d5qasjpr0fns73dekh00-a
+Port:5432
+Database:poke_guesserdb
+Username:poke_guesserdb_user
+Password:JDSYJ704K8Hc3Kp0ZU0IygAl9ezDCH0r
+Internal Database URL:postgresql://poke_guesserdb_user:JDSYJ704K8Hc3Kp0ZU0IygAl9ezDCH0r@dpg-d5qasjpr0fns73dekh00-a/poke_guesserdb
+External Database URL:postgresql://poke_guesserdb_user:JDSYJ704K8Hc3Kp0ZU0IygAl9ezDCH0r@dpg-d5qasjpr0fns73dekh00-a.oregon-postgres.render.com/poke_guesserdb
+PSQL Command:PGPASSWORD=JDSYJ704K8Hc3Kp0ZU0IygAl9ezDCH0r psql -h dpg-d5qasjpr0fns73dekh00-a.oregon-postgres.render.com -U poke_guesserdb_user poke_guesserdb

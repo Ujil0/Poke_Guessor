@@ -43,7 +43,46 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
     loadPokemonList();
     loadStats();
+    initializeLoadingOverlay();
 });
+
+// ===== ロードオーバーレイ初期化 =====
+function initializeLoadingOverlay() {
+    const overlay = document.getElementById('loading-overlay');
+    const loadingBar = document.getElementById('loading-bar');
+    const loadingText = document.getElementById('loading-text');
+
+    let progress = 0;
+    const messages = [
+        '読み込み中...',
+        'ポケモンデータを取得中...',
+        'ゲームを準備中...',
+        '準備完了！'
+    ];
+
+    const interval = setInterval(() => {
+        progress += Math.random() * 15 + 5;
+
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+
+            loadingText.textContent = messages[3];
+            loadingBar.style.width = '100%';
+
+            setTimeout(() => {
+                overlay.classList.add('fade-out');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+            }, 300);
+        } else {
+            const messageIndex = Math.min(Math.floor(progress / 33), 2);
+            loadingText.textContent = messages[messageIndex];
+            loadingBar.style.width = progress + '%';
+        }
+    }, 150);
+}
 
 // ===== イベントリスナー設定 =====
 function initializeEventListeners() {

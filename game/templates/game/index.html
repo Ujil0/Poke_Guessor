@@ -16,6 +16,24 @@
     <link rel="stylesheet" href="{% static 'game/style.css' %}">
 </head>
 <body>
+    <!-- ロードオーバーレイ -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-pokeball">
+                <div class="pokeball-loading">
+                    <div class="pokeball-top"></div>
+                    <div class="pokeball-middle"></div>
+                    <div class="pokeball-bottom"></div>
+                </div>
+            </div>
+            <h2 class="loading-title">ポケゲッサー</h2>
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="loading-bar"></div>
+            </div>
+            <p class="loading-text" id="loading-text">読み込み中...</p>
+        </div>
+    </div>
+
     <div class="background-gradient"></div>
     
     <div class="container">

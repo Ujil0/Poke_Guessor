@@ -26,10 +26,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-aqt!4r87bz$0m_np#g1sw5n(58h!e*6ou2*^&w0=ko(+qpq1^$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
+#もしRender上の環境だったら、そのドメインからしかアクセスできないようにする
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME]
+else:
+    #ローカル環境だったら、localhostと127.0.0.1と*からのアクセスを許可する
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
 
 # Application definition
 
@@ -82,7 +88,7 @@ DATABASES = {
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600
     )
-}
+}#Render上のデータベースに接続する
 
 
 # Password validation

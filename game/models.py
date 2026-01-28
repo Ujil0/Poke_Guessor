@@ -56,6 +56,7 @@ class PlayerStats(models.Model):
     cleared_games = models.IntegerField(default=0, verbose_name='クリア数')
     total_attempts = models.IntegerField(default=0, verbose_name='総試行回数')
     best_attempts = models.IntegerField(null=True, blank=True, verbose_name='最少試行回数')
+    max_attempts = models.IntegerField(default=8, verbose_name='最大試行回数')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
     

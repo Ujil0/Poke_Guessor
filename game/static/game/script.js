@@ -2,6 +2,7 @@
 let sessionId = null;
 let pokemonList = [];
 let currentAttempts = 0;
+let maxAttempts = 8; // デフォルト値
 let selectedIndex = -1;
 
 // ===== DOM要素 =====
@@ -36,6 +37,17 @@ const elements = {
     clearRate: document.getElementById('clearRate'),
     avgAttempts: document.getElementById('avgAttempts'),
     bestAttempts: document.getElementById('bestAttempts'),
+
+    // 設定
+    settingsBtn: document.getElementById('settingsBtn'),
+    settingsModal: document.getElementById('settingsModal'),
+    settingsOverlay: document.getElementById('settingsOverlay'),
+    settingsClose: document.getElementById('settingsClose'),
+    settingsCancel: document.getElementById('settingsCancel'),
+    settingsSave: document.getElementById('settingsSave'),
+    maxAttemptsSlider: document.getElementById('maxAttemptsSlider'),
+    maxAttemptsValue: document.getElementById('maxAttemptsValue'),
+    startMaxAttempts: document.getElementById('startMaxAttempts'),
 };
 
 // ===== 初期化 =====
@@ -43,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
     loadPokemonList();
     loadStats();
+    loadSettings();
     initializeLoadingOverlay();
 });
 
@@ -92,6 +105,14 @@ function initializeEventListeners() {
 
     elements.pokemonInput.addEventListener('input', handleInput);
     elements.pokemonInput.addEventListener('keydown', handleKeyDown);
+
+    // 設定モーダル
+    elements.settingsBtn.addEventListener('click', openSettings);
+    elements.settingsClose.addEventListener('click', closeSettings);
+    elements.settingsCancel.addEventListener('click', closeSettings);
+    elements.settingsSave.addEventListener('click', saveSettings);
+    elements.settingsOverlay.addEventListener('click', closeSettings);
+    elements.maxAttemptsSlider.addEventListener('input', updateSliderValue);
 
     // オートコンプリート外クリックで閉じる
     document.addEventListener('click', (e) => {
@@ -309,7 +330,7 @@ function showResult(success, answer, attempts) {
         elements.resultIcon.textContent = '😢';
         elements.resultTitle.textContent = '失敗...';
         elements.resultTitle.className = 'result-title failure';
-        elements.resultMessage.textContent = '8回以内に当てられませんでした';
+        elements.resultMessage.textContent = `${maxAttempts}回以内に当てられませんでした`;
     }
 
     elements.answerValue.textContent = answer;
@@ -422,7 +443,7 @@ function selectPokemon(name) {
 
 // ===== 試行回数表示更新 =====
 function updateAttemptsDisplay() {
-    elements.attemptsValue.textContent = `${currentAttempts} / 8`;
+    elements.attemptsValue.textContent = `${currentAttempts} / ${maxAttempts}`;
 }
 
 // ===== 結果クリア =====
@@ -446,4 +467,65 @@ function showLoading() {
 
 function hideLoading() {
     elements.loading.classList.add('hidden');
+}
+
+// ===== 設定読み込み =====
+async function loadSettings() {
+    try {
+        const response = await fetch('/api/settings/');
+        const data = await response.json();
+        maxAttempts = data.max_attempts;
+        elements.maxAttemptsSlider.value = maxAttempts;
+        elements.maxAttemptsValue.textContent = maxAttempts;
+        elements.startMaxAttempts.textContent = maxAttempts;
+    } catch (error) {
+        console.error('設定の読み込みに失敗:', error);
+    }
+}
+
+// ===== 設定モーダルを開く =====
+function openSettings() {
+    elements.settingsModal.classList.remove('hidden');
+}
+
+// ===== 設定モーダルを閉じる =====
+function closeSettings() {
+    elements.settingsModal.classList.add('hidden');
+}
+
+// ===== スライダー値更新 =====
+function updateSliderValue() {
+    elements.maxAttemptsValue.textContent = elements.maxAttemptsSlider.value;
+}
+
+// ===== 設定保存 =====
+async function saveSettings() {
+    const newMaxAttempts = parseInt(elements.maxAttemptsSlider.value);
+
+    try {
+        const response = await fetch('/api/settings/update/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                max_attempts: newMaxAttempts,
+            }),
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        maxAttempts = newMaxAttempts;
+        elements.startMaxAttempts.textContent = maxAttempts;
+        updateAttemptsDisplay();
+        closeSettings();
+        alert('設定を保存しました！');
+    } catch (error) {
+        console.error('設定の保存に失敗:', error);
+        alert('設定の保存に失敗しました: ' + error.message);
+    }
 }

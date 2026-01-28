@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ポケゲッサー - ポケモン当てゲーム</title>
     <meta name="description" content="ポケモンの特徴から正解のポケモンを推測するゲームです。図鑑番号、タイプ、身長、体重などのヒントを元に8回以内に当てましょう！">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <!-- CSS -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'game/style.css' %}">
 </head>
+
 <body>
     <!-- ロードオーバーレイ -->
     <div class="loading-overlay" id="loading-overlay">
@@ -35,7 +37,7 @@
     </div>
 
     <div class="background-gradient"></div>
-    
+
     <div class="container">
         <!-- ヘッダー -->
         <header class="header">
@@ -44,7 +46,10 @@
                 ポケゲッサー
                 <span class="title-icon">⚡</span>
             </h1>
-            <p class="subtitle">ポケモンの特徴から正解を当てよう！</p>
+            <div class="subtitle-container">
+                <p class="subtitle">ポケモンの特徴から正解を当てよう！</p>
+                <button class="settings-btn" id="settingsBtn" title="設定">⚙️</button>
+            </div>
         </header>
 
         <!-- 統計情報 -->
@@ -80,7 +85,7 @@
                         </div>
                     </div>
                     <h2>ゲームを始めよう！</h2>
-                    <p>ランダムに選ばれたポケモンを<br>8回以内に当ててください</p>
+                    <p>ランダムに選ばれたポケモンを<br><span id="startMaxAttempts">8</span>回以内に当ててください</p>
                     <button class="btn-primary" id="startBtn">
                         <span>ゲームスタート</span>
                         <span class="btn-arrow">→</span>
@@ -99,13 +104,8 @@
                 <!-- 入力エリア -->
                 <div class="input-area">
                     <div class="input-wrapper">
-                        <input 
-                            type="text" 
-                            id="pokemonInput" 
-                            class="pokemon-input"
-                            placeholder="ポケモンの名前を入力..."
-                            autocomplete="off"
-                        >
+                        <input type="text" id="pokemonInput" class="pokemon-input" placeholder="ポケモンの名前を入力..."
+                            autocomplete="off">
                         <div class="autocomplete-list" id="autocompleteList"></div>
                     </div>
                     <button class="btn-guess" id="guessBtn">
@@ -152,14 +152,45 @@
             <div class="spinner"></div>
             <p>読み込み中...</p>
         </div>
+
+        <!-- 設定モーダル -->
+        <div class="settings-modal hidden" id="settingsModal">
+            <div class="settings-overlay" id="settingsOverlay"></div>
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>⚙️ 設定</h2>
+                    <button class="settings-close" id="settingsClose">✕</button>
+                </div>
+                <div class="settings-body">
+                    <div class="setting-item">
+                        <label for="maxAttemptsSlider" class="setting-label">
+                            最大試行回数
+                            <span class="setting-value" id="maxAttemptsValue">8</span>回
+                        </label>
+                        <input type="range" id="maxAttemptsSlider" class="setting-slider" min="3" max="15" value="8">
+                        <div class="slider-labels">
+                            <span>3回</span>
+                            <span>15回</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-footer">
+                    <button class="btn-secondary" id="settingsCancel">キャンセル</button>
+                    <button class="btn-primary" id="settingsSave">
+                        <span>保存</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
     <footer>
-       「 ポケゲッサー」は、ポケットモンスターの非公式2次創作です。
-株式会社ポケモン他、企業様とは一切関係ありません。
-ポケットモンスター・ポケモン・Pokémonは任天堂・クリーチャーズ・ゲームフリークの登録商標です
+        「 ポケゲッサー」は、ポケットモンスターの非公式2次創作です。
+        株式会社ポケモン他、企業様とは一切関係ありません。
+        ポケットモンスター・ポケモン・Pokémonは任天堂・クリーチャーズ・ゲームフリークの登録商標です
     </footer>
 
     <!-- JavaScript -->
     <script src="{% static 'game/script.js' %}"></script>
 </body>
+
 </html>

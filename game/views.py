@@ -114,14 +114,19 @@ def guess_pokemon(request):
             update_player_stats(session.player_id, True, session.attempts)
             result['game_status'] = 'cleared'
             result['answer'] = target.name_ja
-        elif session.attempts >= 8:
-            session.status = 'failed'
-            session.save()
-            update_player_stats(session.player_id, False, session.attempts)
-            result['game_status'] = 'failed'
-            result['answer'] = target.name_ja
         else:
-            result['game_status'] = 'playing'
+            # プレイヤーの最大試行回数を取得
+            player_stats, _ = PlayerStats.objects.get_or_create(player_id=session.player_id)
+            max_attempts = player_stats.max_attempts
+            
+            if session.attempts >= max_attempts:
+                session.status = 'failed'
+                session.save()
+                update_player_stats(session.player_id, False, session.attempts)
+                result['game_status'] = 'failed'
+                result['answer'] = target.name_ja
+            else:
+                result['game_status'] = 'playing'
         
         return JsonResponse(result)
     
@@ -184,3 +189,62 @@ def get_stats(request):
             'average_attempts': 0,
             'best_attempts': 0,
         })
+
+
+def get_settings(request):
+    """プレイヤー設定を取得"""
+    player_id = get_or_create_player_id(request)
+    
+    try:
+        stats = PlayerStats.objects.get(player_id=player_id)
+        return JsonResponse({
+            'max_attempts': stats.max_attempts,
+        })
+    except PlayerStats.DoesNotExist:
+        return JsonResponse({
+            'max_attempts': 8,  # デフォルト値
+        })
+
+
+@csrf_exempt
+def update_settings(request):
+    """プレイヤー設定を更新"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST method required'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        max_attempts = data.get('max_attempts')
+        
+        if max_attempts is None:
+            return JsonResponse({'error': 'max_attemptsが必要です'}, status=400)
+        
+        # バリデーション: 3～15の範囲
+        try:
+            max_attempts = int(max_attempts)
+            if max_attempts < 3 or max_attempts > 15:
+                return JsonResponse({'error': 'max_attemptsは3～15の範囲で指定してください'}, status=400)
+        except (ValueError, TypeError):
+            return JsonResponse({'error': 'max_attemptsは数値で指定してください'}, status=400)
+        
+        # プレイヤーID取得
+        player_id = get_or_create_player_id(request)
+        
+        # 設定を保存
+        stats, created = PlayerStats.objects.get_or_create(player_id=player_id)
+        stats.max_attempts = max_attempts
+        stats.save()
+        
+        response = JsonResponse({
+            'message': '設定を保存しました',
+            'max_attempts': max_attempts,
+        })
+        
+        # クッキーにプレイヤーIDを保存
+        response.set_cookie('player_id', player_id, max_age=365*24*60*60)
+        
+        return response
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
